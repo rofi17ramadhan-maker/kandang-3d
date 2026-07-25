@@ -1,1 +1,151 @@
 # kandang-3d
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualisasi 3D Kandang 5x22m + Kolam Lele</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #1a1a1a; font-family: sans-serif; }
+        #info {
+            position: absolute; top: 10px; left: 10px; color: white;
+            background: rgba(0,0,0,0.7); padding: 12px; border-radius: 8px;
+            pointer-events: none; max-width: 300px;
+        }
+        #info h3 { margin: 0 0 5px 0; font-size: 16px; color: #4caf50; }
+        #info p { margin: 2px 0; font-size: 12px; }
+    </style>
+    <!-- Library Three.js & OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+    <div id="info">
+        <h3>Kandang Panggung 5x22m</h3>
+        <p>• Red: Gudang Pakan (5x2m)</p>
+        <p>• Blue: Kolam Lele (3.4x20m, -0.8m)</p>
+        <p>• Yellow/Brown: Panggung & Baterai</p>
+        <p>• Grey: Atap Aluminium Monitor</p>
+        <p><i>Gunakan Mouse / Touch untuk Putar & Zoom 3D</i></p>
+    </div>
+
+    <script>
+        // 1. SCENE, CAMERA, RENDERER
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x222222);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(15, 12, 25);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.target.set(2.5, 1.5, 11);
+        controls.update();
+
+        // 2. LIGHTING
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(20, 30, 10);
+        dirLight.castShadow = true;
+        scene.add(dirLight);
+
+        // Grid Dasar Tanah
+        const gridHelper = new THREE.GridHelper(50, 50, 0x444444, 0x333333);
+        gridHelper.position.set(2.5, -1, 11);
+        scene.add(gridHelper);
+
+        // MATERIAL
+        const matBeton = new THREE.MeshStandardMaterial({ color: 0x888888 });
+        const matAir = new THREE.MeshStandardMaterial({ color: 0x1e88e5, transparent: true, opacity: 0.7 });
+        const matKayu = new THREE.MeshStandardMaterial({ color: 0x8d6e63 });
+        const matBaterai = new THREE.MeshStandardMaterial({ color: 0xfbc02d });
+        const matAtap = new THREE.MeshStandardMaterial({ color: 0xb0bec5, side: THREE.DoubleSide });
+        const matGudang = new THREE.MeshStandardMaterial({ color: 0xe53935 });
+
+        // 3. ELEMEN BANGUNAN
+
+        // A. Gudang Pakan (5x2m)
+        const gudang = new THREE.Mesh(new THREE.BoxGeometry(5, 3, 2), matGudang);
+        gudang.position.set(2.5, 1.5, 21);
+        scene.add(gudang);
+
+        // B. Kolam Lele (Air) - Panjang 20m, Lebar 3.4m, Dalam 0.8m
+        const air = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.8, 20), matAir);
+        air.position.set(2.5, -0.4, 10);
+        scene.add(air);
+
+        // C. Tanggul Beton Samping Kolam (0.8m kiri & kanan)
+        const tanggulKiri = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 20), matBeton);
+        tanggulKiri.position.set(0.4, 0.1, 10);
+        scene.add(tanggulKiri);
+
+        const tanggulKanan = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 20), matBeton);
+        tanggulKanan.position.set(4.6, 0.1, 10);
+        scene.add(tanggulKanan);
+
+        // D. Tiang Beton Utama (Jarak 3m)
+        for (let z = 0; z <= 22; z += 3) {
+            const tiangKiri = new THREE.Mesh(new THREE.BoxGeometry(0.15, 3.5, 0.15), matBeton);
+            tiangKiri.position.set(0.08, 1.75, z);
+            scene.add(tiangKiri);
+
+            const tiangKanan = new THREE.Mesh(new THREE.BoxGeometry(0.15, 3.5, 0.15), matBeton);
+            tiangKanan.position.set(4.92, 1.75, z);
+            scene.add(tiangKanan);
+        }
+
+        // E. Lantai Panggung Kayu/Bambu (Tinggi +1.8m)
+        const panggungKiri = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 20), matKayu);
+        panggungKiri.position.set(1.4, 1.8, 10);
+        scene.add(panggungKiri);
+
+        const panggungKanan = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 20), matKayu);
+        panggungKanan.position.set(3.6, 1.8, 10);
+        scene.add(panggungKanan);
+
+        // F. Blok Kandang Baterai Ayam (2 Baris Tipe A)
+        const bateraiKiri = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 20), matBaterai);
+        bateraiKiri.position.set(1.4, 2.45, 10);
+        scene.add(bateraiKiri);
+
+        const bateraiKanan = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 20), matBaterai);
+        bateraiKanan.position.set(3.6, 2.45, 10);
+        scene.add(bateraiKanan);
+
+        // G. Atap Spandek Monitor
+        const atap1 = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.05, 22), matAtap);
+        atap1.position.set(1.2, 3.4, 11);
+        atap1.rotation.z = 0.15;
+        scene.add(atap1);
+
+        const atap2 = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.05, 22), matAtap);
+        atap2.position.set(3.8, 3.4, 11);
+        atap2.rotation.z = -0.15;
+        scene.add(atap2);
+
+        const atapTop = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.05, 22), matAtap);
+        atapTop.position.set(2.5, 3.8, 11);
+        scene.add(atapTop);
+
+        // RESIZE HANDLER & ANIMATION LOOP
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
