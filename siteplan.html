@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Plan 3D Lahan Peternakan 10x35m</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #1a1a1a; font-family: sans-serif; }
+        #info {
+            position: absolute; top: 10px; left: 10px; color: white;
+            background: rgba(0,0,0,0.85); padding: 12px; border-radius: 8px;
+            pointer-events: none; max-width: 320px; border: 1px solid #555;
+        }
+        #info h3 { margin: 0 0 5px 0; font-size: 15px; color: #4caf50; }
+        #info p { margin: 3px 0; font-size: 11px; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+    <div id="info">
+        <h3>Site Plan Lahan 10 x 35 Meter</h3>
+        <p>• <b>Tanah Hijau:</b> Total Lahan 10x35m</p>
+        <p>• <b>Kuning Depan:</b> Pos Security (3x3m) & Parkiran</p>
+        <p>• <b>Merah:</b> Gudang Pakan & Telur (3.5x3m)</p>
+        <p>• <b>Biru Bawah:</b> Kolam Lele (3.4x20m)</p>
+        <p>• <b>Cokelat/Kuning:</b> Kandang Ayam Panggung 5x20m</p>
+        <p>• <b>Abu-abu:</b> Jalan Akses Samping (Lebar 1.5m)</p>
+    </div>
+
+    <script>
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a1a);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(25, 25, 45);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.target.set(5, 0, 17.5);
+        controls.update();
+
+        // LIGHTING
+        scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(30, 40, 20);
+        scene.add(dirLight);
+
+        // MATERIALS
+        const matTanah = new THREE.MeshStandardMaterial({ color: 0x3e2723 });
+        const matRumput = new THREE.MeshStandardMaterial({ color: 0x2e7d32 });
+        const matAspal = new THREE.MeshStandardMaterial({ color: 0x424242 });
+        const matBeton = new THREE.MeshStandardMaterial({ color: 0x9e9e9e });
+        const matPos = new THREE.MeshStandardMaterial({ color: 0xffb300 });
+        const matGudang = new THREE.MeshStandardMaterial({ color: 0xd32f2f });
+        const matAir = new THREE.MeshStandardMaterial({ color: 0x0288d1, transparent: true, opacity: 0.8 });
+        const matKayu = new THREE.MeshStandardMaterial({ color: 0x6d4c41 });
+        const matBaterai = new THREE.MeshStandardMaterial({ color: 0xfbc02d });
+        const matAtap = new THREE.MeshStandardMaterial({ color: 0xc2c2c2, side: THREE.DoubleSide });
+
+        // 1. LAHAN TOTAL (10m x 35m)
+        const lahan = new THREE.Mesh(new THREE.BoxGeometry(10, 0.1, 35), matRumput);
+        lahan.position.set(5, -0.05, 17.5);
+        scene.add(lahan);
+
+        // 2. PARKIRAN & AKSES JALAN DEPAN (10m x 6m)
+        const parkiran = new THREE.Mesh(new THREE.BoxGeometry(6.5, 0.12, 6), matAspal);
+        parkiran.position.set(6.75, 0.01, 3);
+        scene.add(parkiran);
+
+        // 3. POS SECURITY (3m x 3m)
+        const posSecurity = new THREE.Mesh(new THREE.BoxGeometry(3, 2.8, 3), matPos);
+        posSecurity.position.set(1.8, 1.4, 1.5);
+        scene.add(posSecurity);
+
+        // 4. JALAN AKSES SAMPING (1.5m x 29m)
+        const jalanSamping = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.12, 29), matBeton);
+        jalanSamping.position.set(0.75, 0.01, 20.5);
+        scene.add(jalanSamping);
+
+        // 5. GUDANG PAKAN (3.5m x 3m)
+        const gudang = new THREE.Mesh(new THREE.BoxGeometry(3.5, 3, 3), matGudang);
+        gudang.position.set(3.25, 1.5, 7.5);
+        scene.add(gudang);
+
+        // 6. KOLAM LELE (3.4m x 20m x 0.8m)
+        const air = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.8, 20), matAir);
+        air.position.set(4.2, -0.4, 19);
+        scene.add(air);
+
+        // 7. TIANG KANDANG (Panjang 20m)
+        for (let z = 9; z <= 29; z += 2.5) {
+            const t1 = new THREE.Mesh(new THREE.BoxGeometry(0.15, 3.5, 0.15), matBeton);
+            t1.position.set(2.5, 1.75, z);
+            scene.add(t1);
+
+            const t2 = new THREE.Mesh(new THREE.BoxGeometry(0.15, 3.5, 0.15), matBeton);
+            t2.position.set(7.5, 1.75, z);
+            scene.add(t2);
+        }
+
+        // 8. LANTAI PANGGUNG & BATERAI AYAM
+        const panggungKiri = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 20), matKayu);
+        panggungKiri.position.set(3.1, 1.8, 19);
+        scene.add(panggungKiri);
+
+        const panggungKanan = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 20), matKayu);
+        panggungKanan.position.set(5.3, 1.8, 19);
+        scene.add(panggungKanan);
+
+        const bateraiKiri = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 20), matBaterai);
+        bateraiKiri.position.set(3.1, 2.45, 19);
+        scene.add(bateraiKiri);
+
+        const bateraiKanan = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 20), matBaterai);
+        bateraiKanan.position.set(5.3, 2.45, 19);
+        scene.add(bateraiKanan);
+
+        // 9. ATAP MONITOR KANDANG
+        const atap1 = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.05, 20), matAtap);
+        atap1.position.set(3.3, 3.4, 19);
+        atap1.rotation.z = 0.15;
+        scene.add(atap1);
+
+        const atap2 = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.05, 20), matAtap);
+        atap2.position.set(4.7, 3.4, 19);
+        atap2.rotation.z = -0.15;
+        scene.add(atap2);
+
+        // RESIZE & ANIMATION
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
