@@ -3,158 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Plan 3D Presisi - Kandang 5m & Kolam Lebar 6.5m</title>
+    <title>Visualisasi 3D Kandang 5x22m + Kolam Lele 10x20m (Dalam 3m)</title>
     <style>
-        body { margin: 0; overflow: hidden; background-color: #111; font-family: sans-serif; }
+        body { margin: 0; overflow: hidden; background-color: #1a1a1a; font-family: sans-serif; }
         #info {
             position: absolute; top: 10px; left: 10px; color: white;
             background: rgba(0,0,0,0.85); padding: 12px; border-radius: 8px;
             pointer-events: none; max-width: 320px; border: 1px solid #555;
         }
-        #info h3 { margin: 0 0 5px 0; font-size: 15px; color: #4caf50; }
-        #info p { margin: 3px 0; font-size: 11px; }
+        #info h3 { margin: 0 0 5px 0; font-size: 16px; color: #4caf50; }
+        #info p { margin: 2px 0; font-size: 12px; }
     </style>
+    <!-- Library Three.js & OrbitControls -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
 
     <div id="info">
-        <h3>Site Plan Presisi (Lahan 10x35m)</h3>
-        <p>• <b>Tanah Hijau:</b> Total Lahan 10x35m</p>
-        <p>• <b>Jalan Akses Kiri:</b> Lebar 1.5m</p>
-        <p>• <b>Kandang Panggung:</b> Lebar 5m (Tiang Pas di Bangunan)</p>
-        <p>• <b>Kolam Lele:</b> Lebar 6.5m (1.5m Mencolok Keluar untuk Aerasi & Panen)</p>
-        <p>• <b>Kuning Depan:</b> Pos Security (3x3m)</p>
-        <p>• <b>Merah:</b> Gudang Pakan & Telur (3.5x3m)</p>
+        <h3>Kandang Panggung 5x22m</h3>
+        <p>• <b>Red:</b> Gudang Pakan (5x2m)</p>
+        <p>• <b>Blue:</b> Kolam Lele Diperlebar (10x20m, Dalam 3.0m)</p>
+        <p>• <b>Yellow/Brown:</b> Panggung & Baterai (Lebar 5m)</p>
+        <p>• <b>Grey:</b> Atap Aluminium Monitor</p>
+        <p><i>Gunakan Mouse / Touch untuk Putar & Zoom 3D</i></p>
     </div>
 
     <script>
+        // 1. SCENE, CAMERA, RENDERER
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x111111);
+        scene.background = new THREE.Color(0x222222);
 
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(18, 18, 38);
+        camera.position.set(22, 16, 32);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
         document.body.appendChild(renderer.domElement);
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.target.set(5, 1.5, 17.5);
+        controls.target.set(2.5, 1.0, 11);
         controls.update();
 
-        // LIGHTING
-        scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+        // 2. LIGHTING
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
         const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        dirLight.position.set(20, 30, 20);
+        dirLight.position.set(20, 30, 10);
+        dirLight.castShadow = true;
         scene.add(dirLight);
 
-        // MATERIALS
-        const matRumput = new THREE.MeshStandardMaterial({ color: 0x2e7d32 });
-        const matAspal = new THREE.MeshStandardMaterial({ color: 0x333333 });
-        const matBeton = new THREE.MeshStandardMaterial({ color: 0x757575 });
-        const matPos = new THREE.MeshStandardMaterial({ color: 0xffb300 });
-        const matGudang = new THREE.MeshStandardMaterial({ color: 0xc62828 });
-        const matAir = new THREE.MeshStandardMaterial({ color: 0x0288d1, transparent: true, opacity: 0.85 });
-        const matKayu = new THREE.MeshStandardMaterial({ color: 0x5d4037 });
+        // Grid Dasar Tanah (Diturunkan ke Y = -3m menyesuaikan dasar kolam)
+        const gridHelper = new THREE.GridHelper(60, 60, 0x555555, 0x333333);
+        gridHelper.position.set(2.5, -3.0, 11);
+        scene.add(gridHelper);
+
+        // MATERIAL
+        const matBeton = new THREE.MeshStandardMaterial({ color: 0x888888 });
+        const matAir = new THREE.MeshStandardMaterial({ color: 0x1e88e5, transparent: true, opacity: 0.75 });
+        const matKayu = new THREE.MeshStandardMaterial({ color: 0x8d6e63 });
         const matBaterai = new THREE.MeshStandardMaterial({ color: 0xfbc02d });
         const matAtap = new THREE.MeshStandardMaterial({ color: 0xb0bec5, side: THREE.DoubleSide });
+        const matGudang = new THREE.MeshStandardMaterial({ color: 0xe53935 });
 
-        // 1. LAHAN TOTAL (10m x 35m)
-        const lahan = new THREE.Mesh(new THREE.BoxGeometry(10, 0.1, 35), matRumput);
-        lahan.position.set(5, -0.05, 17.5);
-        scene.add(lahan);
+        // 3. ELEMEN BANGUNAN
 
-        // 2. JALAN AKSES SAMPING KIRI (Lebar 1.5m, X: 0 - 1.5m)
-        const jalanSamping = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.12, 35), matBeton);
-        jalanSamping.position.set(0.75, 0.01, 17.5);
-        scene.add(jalanSamping);
-
-        // 3. PARKIRAN DEPAN (6.5m x 6m, X: 3.5 - 10m)
-        const parkiran = new THREE.Mesh(new THREE.BoxGeometry(6.5, 0.12, 6), matAspal);
-        parkiran.position.set(6.75, 0.01, 3);
-        scene.add(parkiran);
-
-        // 4. POS SECURITY (3m x 3m, Tinggi 2.8m)
-        const posSecurity = new THREE.Mesh(new THREE.BoxGeometry(3, 2.8, 3), matPos);
-        posSecurity.position.set(3, 1.4, 1.5);
-        scene.add(posSecurity);
-
-        // 5. GUDANG PAKAN & TELUR (3.5m x 3m, Tinggi 2.8m)
-        const gudang = new THREE.Mesh(new THREE.BoxGeometry(3.5, 2.8, 3), matGudang);
-        gudang.position.set(3.25, 1.4, 7.5);
+        // A. Gudang Pakan (5x2m) - Tetap Sesuai Semula
+        const gudang = new THREE.Mesh(new THREE.BoxGeometry(5, 3, 2), matGudang);
+        gudang.position.set(2.5, 1.5, 21);
         scene.add(gudang);
 
-        // 6. KOLAM LELE DIPERLEBAR (Lebar 6.5m, X: 1.5m - 8.0m, Panjang 20m: Z=9 ke 29)
-        // Kolam berada di bawah kandang (5m) + menonjol keluar ke kanan (1.5m)
-        const air = new THREE.Mesh(new THREE.BoxGeometry(6.5, 0.8, 20), matAir);
-        air.position.set(4.75, -0.4, 19);
+        // B. Kolam Lele (Air) - PERLEBARAN: Lebar 10m, Panjang 20m, Dalam/Tinggi Air 3.0m
+        // Pusat X = 2.5m (Terbentang dari X = -2.5m sampai X = 7.5m, melampaui lebar kandang 5m)
+        const air = new THREE.Mesh(new THREE.BoxGeometry(10.0, 3.0, 20), matAir);
+        air.position.set(2.5, -1.5, 10);
         scene.add(air);
 
-        // Tanggul Pijakan Beton Pinggir Kolam Terbuka (Lebar 0.8m, X: 8.0 - 8.8m)
-        const tanggul = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.15, 20), matBeton);
-        tanggul.position.set(8.4, 0.02, 19);
-        scene.add(tanggul);
+        // C. Tanggul Beton Samping Kolam Terbuka (Dibangun di tepi luar kolam 10m)
+        const tanggulKiri = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 20), matBeton);
+        tanggulKiri.position.set(-2.9, 0.1, 10);
+        scene.add(tanggulKiri);
 
-        // 7. STRUKTUR KANDANG PANGGUNG (Lebar Presisi 5m, X: 1.5m - 6.5m, Panjang 20m)
-        
-        // A. Tiang-tiang Beton Penopang (Tinggi Total 3.2m)
-        for (let z = 9; z <= 29; z += 2.5) {
-            // Tiang Kiri Kandang (X = 1.5m)
-            const tKiri = new THREE.Mesh(new THREE.BoxGeometry(0.15, 3.2, 0.15), matBeton);
-            tKiri.position.set(1.5, 1.6, z);
-            scene.add(tKiri);
+        const tanggulKanan = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 20), matBeton);
+        tanggulKanan.position.set(7.9, 0.1, 10);
+        scene.add(tanggulKanan);
 
-            // Tiang Kanan Kandang (X = 6.5m - Pas di batas lebar kandang 5m)
-            const tKanan = new THREE.Mesh(new THREE.BoxGeometry(0.15, 3.2, 0.15), matBeton);
-            tKanan.position.set(6.5, 1.6, z);
-            scene.add(tKanan);
+        // D. Tiang Beton Utama (Jarak 3m) - Tetap di Lebar Bangunan 5m
+        for (let z = 0; z <= 22; z += 3) {
+            // Tiang diperpanjang ke bawah hingga dasar kolam (-3.0m) agar kokoh menopang panggung
+            const tiangKiri = new THREE.Mesh(new THREE.BoxGeometry(0.15, 6.5, 0.15), matBeton);
+            tiangKiri.position.set(0.08, 0.25, z);
+            scene.add(tiangKiri);
 
-            // Tapak Beton / Sepatu Tiang
-            const tapakKiri = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.4, 0.3), matBeton);
-            tapakKiri.position.set(1.5, -0.2, z);
-            scene.add(tapakKiri);
-
-            const tapakKanan = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.4, 0.3), matBeton);
-            tapakKanan.position.set(6.5, -0.2, z);
-            scene.add(tapakKanan);
+            const tiangKanan = new THREE.Mesh(new THREE.BoxGeometry(0.15, 6.5, 0.15), matBeton);
+            tiangKanan.position.set(4.92, 0.25, z);
+            scene.add(tiangKanan);
         }
 
-        // B. Lantai Panggung Kayu/Bambu (Papan Kiri & Kanan dengan Lorong Tengah)
-        const panggungKiri = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.08, 20), matKayu);
-        panggungKiri.position.set(2.25, 1.8, 19);
+        // E. Lantai Panggung Kayu/Bambu (Tinggi +1.8m) - Tetap Sesuai Semula
+        const panggungKiri = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 20), matKayu);
+        panggungKiri.position.set(1.4, 1.8, 10);
         scene.add(panggungKiri);
 
-        const panggungKanan = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.08, 20), matKayu);
-        panggungKanan.position.set(5.75, 1.8, 19);
+        const panggungKanan = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 20), matKayu);
+        panggungKanan.position.set(3.6, 1.8, 10);
         scene.add(panggungKanan);
 
-        // C. Kandang Baterai Ayam (Lebar 1.2m, Pas di atas panggung)
-        const bateraiKiri = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.1, 20), matBaterai);
-        bateraiKiri.position.set(2.25, 2.39, 19);
+        // F. Blok Kandang Baterai Ayam (2 Baris Tipe A) - Tetap Sesuai Semula
+        const bateraiKiri = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 20), matBaterai);
+        bateraiKiri.position.set(1.4, 2.45, 10);
         scene.add(bateraiKiri);
 
-        const bateraiKanan = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.1, 20), matBaterai);
-        bateraiKanan.position.set(5.75, 2.39, 19);
+        const bateraiKanan = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 20), matBaterai);
+        bateraiKanan.position.set(3.6, 2.45, 10);
         scene.add(bateraiKanan);
 
-        // D. Atap Spandek Kandang (Menutupi Lebar 5m Kandang dari X = 1.5m s/d 6.5m)
-        const atapKiri = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.05, 20), matAtap);
-        atapKiri.position.set(2.75, 3.25, 19);
-        atapKiri.rotation.z = 0.12;
-        scene.add(atapKiri);
+        // G. Atap Spandek Monitor - Tetap Sesuai Semula
+        const atap1 = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.05, 22), matAtap);
+        atap1.position.set(1.2, 3.4, 11);
+        atap1.rotation.z = 0.15;
+        scene.add(atap1);
 
-        const atapKanan = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.05, 20), matAtap);
-        atapKanan.position.set(5.25, 3.25, 19);
-        atapKanan.rotation.z = -0.12;
-        scene.add(atapKanan);
+        const atap2 = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.05, 22), matAtap);
+        atap2.position.set(3.8, 3.4, 11);
+        atap2.rotation.z = -0.15;
+        scene.add(atap2);
 
-        const atapMonitor = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.05, 20), matAtap);
-        atapMonitor.position.set(4.0, 3.5, 19);
-        scene.add(atapMonitor);
+        const atapTop = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.05, 22), matAtap);
+        atapTop.position.set(2.5, 3.8, 11);
+        scene.add(atapTop);
 
-        // RESIZE & ANIMATION
+        // RESIZE HANDLER & ANIMATION LOOP
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
