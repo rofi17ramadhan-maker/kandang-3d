@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Plan 3D Lahan Peternakan 10x35m</title>
+    <title>Site Plan 3D - Kolam Diperlebar</title>
     <style>
         body { margin: 0; overflow: hidden; background-color: #1a1a1a; font-family: sans-serif; }
         #info {
@@ -20,13 +20,13 @@
 <body>
 
     <div id="info">
-        <h3>Site Plan Lahan 10 x 35 Meter</h3>
+        <h3>Site Plan 10x35m (Kolam Lebar 6.5m)</h3>
         <p>• <b>Tanah Hijau:</b> Total Lahan 10x35m</p>
         <p>• <b>Kuning Depan:</b> Pos Security (3x3m) & Parkiran</p>
         <p>• <b>Merah:</b> Gudang Pakan & Telur (3.5x3m)</p>
-        <p>• <b>Biru Bawah:</b> Kolam Lele (3.4x20m)</p>
+        <p>• <b>Biru Bawah:</b> Kolam Lele Diperlebar (6.5x20m)</p>
+        <p>• <b>Area Terbuka Kolam:</b> Lebar 1.5m di luar kandang (Akses Aerasi & Panen)</p>
         <p>• <b>Cokelat/Kuning:</b> Kandang Ayam Panggung 5x20m</p>
-        <p>• <b>Abu-abu:</b> Jalan Akses Samping (Lebar 1.5m)</p>
     </div>
 
     <script>
@@ -51,13 +51,12 @@
         scene.add(dirLight);
 
         // MATERIALS
-        const matTanah = new THREE.MeshStandardMaterial({ color: 0x3e2723 });
         const matRumput = new THREE.MeshStandardMaterial({ color: 0x2e7d32 });
         const matAspal = new THREE.MeshStandardMaterial({ color: 0x424242 });
         const matBeton = new THREE.MeshStandardMaterial({ color: 0x9e9e9e });
         const matPos = new THREE.MeshStandardMaterial({ color: 0xffb300 });
         const matGudang = new THREE.MeshStandardMaterial({ color: 0xd32f2f });
-        const matAir = new THREE.MeshStandardMaterial({ color: 0x0288d1, transparent: true, opacity: 0.8 });
+        const matAir = new THREE.MeshStandardMaterial({ color: 0x0288d1, transparent: true, opacity: 0.85 });
         const matKayu = new THREE.MeshStandardMaterial({ color: 0x6d4c41 });
         const matBaterai = new THREE.MeshStandardMaterial({ color: 0xfbc02d });
         const matAtap = new THREE.MeshStandardMaterial({ color: 0xc2c2c2, side: THREE.DoubleSide });
@@ -87,12 +86,17 @@
         gudang.position.set(3.25, 1.5, 7.5);
         scene.add(gudang);
 
-        // 6. KOLAM LELE (3.4m x 20m x 0.8m)
-        const air = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.8, 20), matAir);
-        air.position.set(4.2, -0.4, 19);
+        // 6. KOLAM LELE DIPERLEBAR (6.5m x 20m x 0.8m) -> Melebihi lebar kandang panggung!
+        const air = new THREE.Mesh(new THREE.BoxGeometry(6.5, 0.8, 20), matAir);
+        air.position.set(5.75, -0.4, 19);
         scene.add(air);
 
-        // 7. TIANG KANDANG (Panjang 20m)
+        // Pijakan/Tanggul Beton Pinggir Kolam Terbuka
+        const tanggulPanen = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.15, 20), matBeton);
+        tanggulPanen.position.set(9.4, 0.02, 19);
+        scene.add(tanggulPanen);
+
+        // 7. TIANG KANDANG PANGGUNG (Panjang 20m)
         for (let z = 9; z <= 29; z += 2.5) {
             const t1 = new THREE.Mesh(new THREE.BoxGeometry(0.15, 3.5, 0.15), matBeton);
             t1.position.set(2.5, 1.75, z);
@@ -103,7 +107,7 @@
             scene.add(t2);
         }
 
-        // 8. LANTAI PANGGUNG & BATERAI AYAM
+        // 8. LANTAI PANGGUNG & BATERAI AYAM (Lebar tetap 5m)
         const panggungKiri = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 20), matKayu);
         panggungKiri.position.set(3.1, 1.8, 19);
         scene.add(panggungKiri);
