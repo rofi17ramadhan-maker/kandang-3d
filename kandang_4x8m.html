@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualisasi 3D Kandang 4x8m + Kolam Lele</title>
+    <title>Visualisasi 3D Kandang 4x8m + Kolam Lele (2.5m)</title>
     <style>
         body { margin: 0; overflow: hidden; background-color: #1a1a1a; font-family: sans-serif; }
         #info {
             position: absolute; top: 10px; left: 10px; color: white;
             background: rgba(0,0,0,0.7); padding: 12px; border-radius: 8px;
-            pointer-events: none; max-width: 300px;
+            pointer-events: none; max-width: 320px;
         }
         #info h3 { margin: 0 0 5px 0; font-size: 16px; color: #4caf50; }
         #info p { margin: 2px 0; font-size: 12px; }
@@ -23,9 +23,10 @@
     <div id="info">
         <h3>Kandang Panggung 4x8m</h3>
         <p>• Red: Gudang Pakan (3x1.5m)</p>
-        <p>• Blue: Kolam Lele (4x6.5m, -3.0m)</p>
+        <p>• Blue: Kolam Lele (4x6.5m, Dalam Air 2.5m)</p>
         <p>• Yellow/Brown: Panggung & Baterai</p>
-        <p>• Grey: Atap Aluminium Monitor</p>
+        <p>• Grey (Atas): Atap Aluminium Monitor</p>
+        <p>• Grey (Samping): Tanggul Pijakan Operator</p>
         <p><i>Gunakan Mouse / Touch untuk Putar & Zoom 3D</i></p>
     </div>
 
@@ -55,9 +56,9 @@
         dirLight.castShadow = true;
         scene.add(dirLight);
 
-        // Grid Dasar Tanah (Diturunkan ke Y = -3m menyesuaikan dasar kolam)
+        // Grid Dasar Tanah (Diturunkan ke Y = -2.5m menyesuaikan dasar kolam)
         const gridHelper = new THREE.GridHelper(25, 25, 0x444444, 0x333333);
-        gridHelper.position.set(2.0, -3.0, 4.0);
+        gridHelper.position.set(2.0, -2.5, 4.0);
         scene.add(gridHelper);
 
         // MATERIAL
@@ -75,24 +76,24 @@
         gudang.position.set(1.5, 1.4, 7.25);
         scene.add(gudang);
 
-        // B. Kolam Lele (Air) - Panjang 6.5m, Lebar 4m, Dalam 3.0m
-        const air = new THREE.Mesh(new THREE.BoxGeometry(4.0, 3.0, 6.5), matAir);
-        air.position.set(2.0, -1.5, 3.25);
+        // B. Kolam Lele (Air) - Panjang 6.5m, Lebar 4m, Kedalaman Air 2.5m
+        const air = new THREE.Mesh(new THREE.BoxGeometry(4.0, 2.5, 6.5), matAir);
+        air.position.set(2.0, -1.25, 3.25);
         scene.add(air);
 
-        // C. Tanggul Beton Samping Kolam Terbuka (Sisi Kanan)
+        // C. Tanggul/Pijakan Beton Pinggir Kolam Terbuka (Sisi Kanan)
         const tanggulKanan = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.2, 6.5), matBeton);
-        tanggulKanan.position.set(4.25, 0.1, 3.25);
+        tanggulKanan.position.set(3.75, 0.1, 3.25);
         scene.add(tanggulKanan);
 
         // D. Tiang Beton Utama (Jarak ~2.16m)
         for (let z = 0; z <= 6.5; z += 2.16) {
-            const tiangKiri = new THREE.Mesh(new THREE.BoxGeometry(0.15, 6.2, 0.15), matBeton);
-            tiangKiri.position.set(0.075, 0.1, z);
+            const tiangKiri = new THREE.Mesh(new THREE.BoxGeometry(0.15, 5.7, 0.15), matBeton);
+            tiangKiri.position.set(0.075, 0.35, z);
             scene.add(tiangKiri);
 
-            const tiangKanan = new THREE.Mesh(new THREE.BoxGeometry(0.15, 6.2, 0.15), matBeton);
-            tiangKanan.position.set(2.925, 0.1, z);
+            const tiangKanan = new THREE.Mesh(new THREE.BoxGeometry(0.15, 5.7, 0.15), matBeton);
+            tiangKanan.position.set(2.925, 0.35, z);
             scene.add(tiangKanan);
         }
 
